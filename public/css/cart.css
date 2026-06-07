@@ -221,6 +221,37 @@
   text-align: center; margin: 6px 0 0;
 }
 
+/* ── Strip de medios de pago (panel carrito) ── */
+.cart-pay-strip {
+  margin: 0 0 14px;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #eef0f5;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+}
+.cpay-lock {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: #7a8a99; font-weight: 600;
+}
+.cpay-logos {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: center;
+}
+.cpay-badge {
+  height: 22px; padding: 0 8px;
+  display: inline-flex; align-items: center;
+  border-radius: 4px;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.3px;
+  line-height: 1;
+}
+.cpay-wompi { background: #6C27FF; color: #fff; }
+.cpay-addi  { background: #01C35D; color: #fff; }
+.cpay-pse   { background: #003087; color: #fff; font-size: 10px; }
+.cpay-visa  { background: #1434CB; color: #fff; font-style: italic; letter-spacing: 1px; }
+.cpay-mc    { display: inline-flex; align-items: center; height: 22px; }
+.cpay-mc-r  { width: 15px; height: 15px; border-radius: 50%; background: #EB001B; }
+.cpay-mc-o  { width: 15px; height: 15px; border-radius: 50%; background: #F79E1B; margin-left: -7px; opacity: 0.85; }
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .cart-panel { width: 100vw; }

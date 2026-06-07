@@ -23,11 +23,27 @@ var PRODUCTS=[
    specs:[['Driver','12.4mm dinamico'],['ANC','Activo'],['Bateria','6h+18h'],['Carga','USB-C'],['Resistencia','IP54'],['Conexion','BT 5.3'],['Latencia','46ms']]},
   {brand:'Epson',name:'EcoTank L4260 Wi-Fi',badge:'Sin cartuchos',badgeClass:'blue',price:879000,oldPrice:1050000,discount:'16% OFF',rating:4,
    images:['/images/products/impresora-epson-l4260.webp','/images/products/camara-hp-320.webp','/images/products/camara-logitech-mx-brio.png'],
-   specs:[['Funcion','Impresora/Escaner/Copiadora'],['Velocidad','15 ppm negro'],['Resolucion','5760x1440 dpi'],['Conectividad','Wi-Fi/USB'],['Compatibilidad','Win/Mac'],['Tinta','7500 pag negro'],['Garantia','2 anos']]}
+   specs:[['Funcion','Impresora/Escaner/Copiadora'],['Velocidad','15 ppm negro'],['Resolucion','5760x1440 dpi'],['Conectividad','Wi-Fi/USB'],['Compatibilidad','Win/Mac'],['Tinta','7500 pag negro'],['Garantia','2 anos']]},
+  {brand:'Lenovo',name:'Portátil Corporativo V14 G4 IRU',badge:'Corporativo',badgeClass:'blue',price:2490000,oldPrice:3890000,discount:'36% OFF',rating:5,
+   images:['/images/products/portatil-lenovo.png','/images/products/portatil-dell.png'],
+   desc:'El V14 G4 IRU está diseñado para el profesional moderno que exige rendimiento confiable en su jornada de trabajo. Con procesador Intel Core i5 de 13ª generación y pantalla FHD Anti-glare, ofrece nitidez y velocidad para las cargas de trabajo más exigentes. Su construcción supera la certificación MIL-STD-810H, garantizando durabilidad ante el uso intensivo diario.',
+   descTags:['MIL-STD-810H','Intel 13ª Gen','Windows 11 Pro','SSD NVMe','Garantía Lenovo'],
+   specs:[['Procesador','Intel Core i5-1335U 13ª Gen'],['RAM','8 GB DDR4 / amp. 16 GB'],['Almacenamiento','512 GB SSD NVMe'],['Pantalla','14" FHD IPS Anti-glare'],['Gráficos','Intel Iris Xe'],['Batería','45 Wh · ~7 horas'],['Sistema','Windows 11 Pro']]}
 ];
 
 /* ── HELPERS ── */
 function fmt(n){return '$'+n.toLocaleString('es-CO');}
+
+var _SAFE_TAGS=/^(p|ul|ol|li|strong|em|b|i|br|h2|h3|h4|span|div|a)$/i;
+var _UNSAFE_TAGS=/<(script|style|iframe|form|input|button|object|embed|link|meta|base)[^>]*>[\s\S]*?<\/\1>|<(script|style|iframe|form|input|button|object|embed|link|meta|base)[^>]*\/?>/gi;
+function sanitizeDesc(html){
+  if(!html)return'';
+  return html.replace(_UNSAFE_TAGS,'').replace(/<[^>]+>/g,function(tag){
+    var m=tag.match(/^<\/?([a-z][a-z0-9]*)/i);
+    if(!m)return'';
+    return _SAFE_TAGS.test(m[1])?tag:'';
+  }).trim();
+}
 function stars(r){var s='';for(var i=0;i<5;i++)s+='<span class="ts-star '+(i<r?'on':'off')+'">&#9733;</span>';return s;}
 function discountNum(d){return parseFloat(d)||0;}
 
@@ -119,26 +135,34 @@ function toggleExtraProducts(){
   }
 }
 
-/* ── MODAL ── */
+/* ── MODAL (Quick View) ── */
 var activeProductIdx=0;
 function tsOpenModal(idx){
-  activeProductIdx=idx;var p=PRODUCTS[idx];
-  document.getElementById('ts-modal-brand').textContent=p.brand;
-  document.getElementById('ts-modal-name').textContent=p.name;
-  document.getElementById('ts-modal-disc').textContent=p.discount;
-  document.getElementById('ts-modal-price').textContent=fmt(p.price);
-  document.getElementById('ts-modal-old').textContent=fmt(p.oldPrice);
-  var mi=document.getElementById('ts-modal-main-img');mi.src=p.images[0];mi.alt=p.name;
-  document.getElementById('ts-modal-thumbs').innerHTML=p.images.map(function(src,i){
-    return '<img class="ts-thumb '+(i===0?'active':'')+'" src="'+src+'" alt="Vista '+(i+1)+'" onclick="tsSetThumb('+i+')" tabindex="0">';
-  }).join('');
-  document.getElementById('ts-modal-specs').innerHTML=p.specs.map(function(row){
-    return '<div class="ts-spec-row"><span class="ts-spec-key">'+row[0]+'</span><span class="ts-spec-val">'+row[1]+'</span></div>';
-  }).join('');
-  var msg=encodeURIComponent('Hola! Me interesa el '+p.brand+' '+p.name+' ('+fmt(p.price)+').');
-  var wb=document.getElementById('ts-btn-wsp');if(wb)wb.onclick=function(){window.open('https://wa.me/573225817129?text='+msg,'_blank');};
-  var ov=document.getElementById('ts-modal-overlay');ov.classList.add('open');document.body.style.overflow='hidden';
-  setTimeout(function(){var c=document.querySelector('.ts-modal-close');if(c)c.focus();},60);
+  activeProductIdx=idx;
+  var p=PRODUCTS[idx]; if(!p) return;
+  /* Carrito */
+  window.qvCartAction=function(){
+    if(typeof addToCart==='function'){
+      addToCart({name:p.name,price:p.price,image:p.images&&p.images[0]?p.images[0]:'',category:p.brand||''});
+    }
+  };
+  /* WhatsApp */
+  var msg=encodeURIComponent('Hola! Me interesa: '+p.brand+' '+p.name+' ('+fmt(p.price)+').');
+  window.qvWspAction=function(){ window.open('https://wa.me/573225817129?text='+msg,'_blank'); };
+  /* Abrir modal */
+  if(typeof window.qvOpenProduct==='function'){
+    window.qvOpenProduct({
+      brand:    p.brand,
+      name:     p.name,
+      price:    fmt(p.price),
+      oldPrice: fmt(p.oldPrice),
+      discount: p.discount||'',
+      desc:     p.desc||'',
+      tags:     p.descTags||[],
+      images:   p.images||[],
+      specs:    p.specs||[]
+    });
+  }
 }
 var _mc=document.querySelector('.ts-modal-close');
 if(_mc)_mc.addEventListener('click',function(){var ov=document.getElementById('ts-modal-overlay');if(ov){ov.classList.remove('open');document.body.style.overflow='';}});
@@ -279,9 +303,13 @@ function tsOpenModalAll(idx){
   document.getElementById('ts-modal-thumbs').innerHTML=(p.images||[]).map(function(src,i){
     return '<img class="ts-thumb ts-modal-thumb '+(i===0?'active':'')+'" src="'+src+'" alt="Vista '+(i+1)+'" onclick="tsSetThumbAll('+i+','+idx+')" tabindex="0">';
   }).join('');
-  document.getElementById('ts-modal-specs').innerHTML=
-    '<div class="ts-spec-row" style="padding:10px 0;font-size:13.5px;color:var(--color-text-muted)">'+
-    'Consulta por WhatsApp para obtener especificaciones detalladas y disponibilidad.</div>';
+  var specsEl=document.getElementById('ts-modal-specs');
+  if(specsEl){
+    var desc=sanitizeDesc(p.shortDesc||'');
+    specsEl.innerHTML=desc
+      ?'<div style="padding:10px 0;font-size:13.5px;color:var(--color-text-muted);line-height:1.65">'+desc+'</div>'
+      :'<div style="padding:10px 0;font-size:13.5px;color:var(--color-text-muted)">Consulta por WhatsApp para especificaciones completas y disponibilidad.</div>';
+  }
   var msg=encodeURIComponent('Hola! Me interesa el producto: '+p.name+' ('+fmt(p.price)+').');
   var wb=document.getElementById('ts-btn-wsp');if(wb)wb.onclick=function(){window.open('https://wa.me/573225817129?text='+msg,'_blank');};
   var ov=document.getElementById('ts-modal-overlay');ov.classList.add('open');document.body.style.overflow='hidden';
@@ -361,6 +389,7 @@ function tsSetThumbAll(imgIdx,prodIdx){
             oldPrice: Math.round(regular),
             discount: discount,
             images:   (p.images || []).map(function(img) { return img.src || ''; }).filter(Boolean),
+            shortDesc: sanitizeDesc(p.short_description || p.description || ''),
             category: 'Ofertas'
           };
         });

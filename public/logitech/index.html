@@ -91,10 +91,10 @@
     .lg-cat-banner--hogar  { background: #c4956a; }
     .lg-cat-banner--gamer  { background: #050a06; }
     .lg-cat-banner--oficina{ background: #000d24; }
-    /* Hogar: retrato vertical — rostros ligeramente bajo el tope */
-    .lg-cat-banner--hogar .lg-cat-banner-img  { object-position: center 40%; transform: scale(0.85); transform-origin: center center; }
-    /* Gamer: paisaje — cara en zona superior-central */
-    .lg-cat-banner--gamer .lg-cat-banner-img  { object-position: 42% 18%; }
+    /* Hogar: imagen horizontal — desplazada 10% hacia abajo */
+    .lg-cat-banner--hogar .lg-cat-banner-img  { object-position: center 30%; }
+    /* Gamer: imagen completa sin recorte */
+    .lg-cat-banner--gamer .lg-cat-banner-img  { object-fit: contain; object-position: center center; }
     /* Oficina: paisaje — cara a la derecha, zona media */
     .lg-cat-banner--oficina .lg-cat-banner-img{ object-position: 65% 20%; }
     .lg-cat-banner-overlay {
@@ -256,6 +256,37 @@
     .lg-modal-wa:hover { background: #1da851; }
     .lg-modal-wa svg { flex-shrink: 0; }
 
+    /* ══ DESCRIPCIÓN EN MODAL ══ */
+    .lg-desc-header {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.8px;
+      text-transform: uppercase;
+      border-top: 1px solid rgba(0,0,0,0.09);
+      padding-top: 14px; margin: 12px 0 0;
+    }
+    .lg-desc-block {
+      border-radius: 10px; padding: 12px 14px; margin-top: 8px; margin-bottom: 4px;
+    }
+    .lg-desc-block p { margin: 0 0 5px; font-size: 13px; line-height: 1.7; }
+    .lg-desc-block p:last-child { margin-bottom: 0; }
+    .lg-desc-block ul, .lg-desc-block ol { margin: 4px 0 5px; padding-left: 17px; }
+    .lg-desc-block li { font-size: 13px; line-height: 1.65; margin-bottom: 3px; }
+    .lg-desc-block strong, .lg-desc-block b { font-weight: 600; }
+    .lg-desc-fallback { font-size: 12.5px; font-style: italic; text-align: center; padding: 4px 0; margin: 0; }
+
+    /* Colores por categoría */
+    #lg-modal.cat-hogar  .lg-desc-header { color: #b45309; }
+    #lg-modal.cat-hogar  .lg-desc-block  { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.18); color: #3d2c00; }
+    #lg-modal.cat-hogar  .lg-desc-fallback { color: #b0946a; }
+
+    #lg-modal.cat-gamer  .lg-desc-header { color: #00ff87; }
+    #lg-modal.cat-gamer  .lg-desc-block  { background: rgba(0,255,135,0.06); border: 1px solid rgba(0,255,135,0.18); color: #c8f5d0; }
+    #lg-modal.cat-gamer  .lg-desc-fallback { color: #4a7a55; }
+
+    #lg-modal.cat-oficina .lg-desc-header { color: #0057b8; }
+    #lg-modal.cat-oficina .lg-desc-block  { background: rgba(0,87,184,0.06); border: 1px solid rgba(0,87,184,0.16); color: #1a2f4a; }
+    #lg-modal.cat-oficina .lg-desc-fallback { color: #7a9bbf; }
+
     /* ══ FOOTER ══ */
     .lg-footer {
       background: #0f1011; color: rgba(255,255,255,0.45);
@@ -370,7 +401,7 @@
   <!-- Panel Hogar -->
   <div id="panel-hogar" class="lg-panel active slide-from-right" role="tabpanel" aria-labelledby="tab-hogar">
     <div class="lg-cat-banner lg-cat-banner--hogar">
-      <img class="lg-cat-banner-img" src="/images/fondos/logitech-hogar.jpg" alt="" loading="lazy" aria-hidden="true">
+      <img class="lg-cat-banner-img" src="/images/fondos/logitech-hogar.png" alt="" loading="lazy" aria-hidden="true">
       <div class="lg-cat-banner-overlay lg-cat-banner-overlay--hogar"></div>
       <div class="lg-cat-banner-inner">
         <div class="lg-cat-banner-content">
@@ -392,7 +423,7 @@
   <!-- Panel Gamer -->
   <div id="panel-gamer" class="lg-panel" role="tabpanel" aria-labelledby="tab-gamer">
     <div class="lg-cat-banner lg-cat-banner--gamer">
-      <img class="lg-cat-banner-img" src="/images/fondos/logitech-gamer.jpg" alt="" loading="lazy" aria-hidden="true">
+      <img class="lg-cat-banner-img" src="/images/fondos/logitech-gamer.png" alt="" loading="lazy" aria-hidden="true">
       <div class="lg-cat-banner-overlay lg-cat-banner-overlay--gamer"></div>
       <div class="lg-cat-banner-inner">
         <div class="lg-cat-banner-content">
@@ -414,7 +445,7 @@
   <!-- Panel Oficina -->
   <div id="panel-oficina" class="lg-panel" role="tabpanel" aria-labelledby="tab-oficina">
     <div class="lg-cat-banner lg-cat-banner--oficina">
-      <img class="lg-cat-banner-img" src="/images/fondos/logitech-oficina.jpg" alt="" loading="lazy" aria-hidden="true">
+      <img class="lg-cat-banner-img" src="/images/fondos/logitech-oficina.png" alt="" loading="lazy" aria-hidden="true">
       <div class="lg-cat-banner-overlay lg-cat-banner-overlay--oficina"></div>
       <div class="lg-cat-banner-inner">
         <div class="lg-cat-banner-content">
@@ -448,6 +479,7 @@
         <div class="lg-modal-price" id="modal-price"></div>
         <div class="lg-modal-old"   id="modal-old"></div>
         <div class="lg-modal-badge" id="modal-badge"></div>
+        <div id="lg-modal-desc-wrap"></div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
           <button id="lg-modal-cart-btn" onclick="lgAddToCart()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;background:#0057b8;color:#fff;border:none;border-radius:8px;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.2s;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>
@@ -477,6 +509,19 @@
       <div class="cart-total-row">
         <span>Total</span>
         <strong id="cart-total">$0</strong>
+      </div>
+      <div class="cart-pay-strip" aria-label="Métodos de pago disponibles">
+        <span class="cpay-lock">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          Pagos 100% seguros · SSL
+        </span>
+        <div class="cpay-logos">
+          <span class="cpay-badge cpay-wompi">wompi</span>
+          <span class="cpay-badge cpay-addi">addi</span>
+          <span class="cpay-badge cpay-pse">PSE</span>
+          <span class="cpay-badge cpay-visa">VISA</span>
+          <span class="cpay-mc" aria-label="Mastercard"><span class="cpay-mc-r"></span><span class="cpay-mc-o"></span></span>
+        </div>
       </div>
       <button class="cart-btn-checkout" onclick="openCheckoutForm()">Proceder al pago</button>
     </div>
@@ -642,6 +687,23 @@
       document.getElementById('modal-price').textContent = fmt(p.price);
       document.getElementById('modal-old').textContent = (p.oldPrice && p.oldPrice !== p.price) ? fmt(p.oldPrice) : '';
       document.getElementById('modal-badge').textContent = p.discount || '';
+
+      /* Clase de categoría para colores temáticos */
+      var modal = document.getElementById('lg-modal');
+      modal.classList.remove('cat-hogar', 'cat-gamer', 'cat-oficina');
+      modal.classList.add('cat-' + currentCat);
+
+      /* Descripción */
+      var descWrap = document.getElementById('lg-modal-desc-wrap');
+      if (descWrap) {
+        var desc = p.shortDesc || '';
+        var iconSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+        descWrap.innerHTML = '<div class="lg-desc-header">' + iconSvg + ' Descripción</div>'
+          + (desc
+            ? '<div class="lg-desc-block">' + desc + '</div>'
+            : '<div class="lg-desc-block"><p class="lg-desc-fallback">Consulta por WhatsApp para más información.</p></div>');
+      }
+
       var msg = encodeURIComponent('Hola, me interesa el ' + p.name + ' a ' + fmt(p.price) + '. ¿Está disponible?');
       document.getElementById('modal-wa-btn').href = 'https://wa.me/573017298980?text=' + msg;
       document.getElementById('lg-modal-overlay').classList.add('open');

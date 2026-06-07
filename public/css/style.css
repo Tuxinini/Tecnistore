@@ -616,6 +616,23 @@ h3 { font-size: 20px; font-weight: 700; }
 .ts-modal-price { font-size: 26px; font-weight: 900; color: var(--color-primary); }
 .ts-modal-old { font-size: 14px; color: var(--color-text-muted); text-decoration: line-through; }
 .ts-specs-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted); margin-top: 8px; }
+.ts-modal-desc {
+  font-size: 13.5px; line-height: 1.65; color: #444;
+  border-left: 3px solid var(--color-primary);
+  padding: 10px 14px;
+  background: #f7fbff;
+  border-radius: 0 6px 6px 0;
+  margin-top: 2px;
+}
+.ts-modal-desc-highlights {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.ts-modal-desc-tag {
+  font-size: 11.5px; font-weight: 700;
+  background: #e8f4ff; color: var(--color-primary);
+  border: 1px solid #b8dcf5;
+  padding: 3px 10px; border-radius: 20px;
+}
 .ts-modal-spec-row { display: flex; gap: 8px; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #f0f4f8; }
 .ts-modal-spec-key { font-weight: 600; min-width: 110px; color: var(--color-text-muted); }
 .ts-modal-spec-val { color: var(--color-text); }
@@ -876,6 +893,20 @@ h3 { font-size: 20px; font-weight: 700; }
 .footer-lines-grid a { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); transition: color var(--transition); }
 .footer-lines-grid a:hover { color: var(--color-primary); }
 .footer-copy { text-align: center; color: rgba(255,255,255,0.35); font-size: 12px; line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; width: 100%; }
+
+/* ── Medios de pago — footer ── */
+.footer-pay { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 0 6px; width: 100%; border-top: 1px solid rgba(255,255,255,0.07); }
+.footer-pay-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); }
+.footer-pay-logos { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.fpay-badge { height: 26px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 5px; font-size: 12px; font-weight: 800; letter-spacing: 0.3px; }
+.fpay-wompi { background: #6C27FF; color: #fff; }
+.fpay-addi  { background: #01C35D; color: #fff; }
+.fpay-pse   { background: #003087; color: #fff; font-size: 11px; }
+.fpay-visa  { background: #1434CB; color: #fff; font-style: italic; letter-spacing: 1.5px; }
+.fpay-efecty { background: #FFD000; color: #1a1a1a; font-size: 11px; }
+.fpay-mc { display: inline-flex; align-items: center; height: 26px; }
+.fpay-mc-r { width: 18px; height: 18px; border-radius: 50%; background: #EB001B; }
+.fpay-mc-o { width: 18px; height: 18px; border-radius: 50%; background: #F79E1B; margin-left: -8px; opacity: 0.85; }
 
 /* ══ WHATSAPP FLOTANTE ══ */
 .whatsapp-float {
@@ -1581,6 +1612,14 @@ h3 { font-size: 20px; font-weight: 700; }
   inset: 0;
   background: rgba(0,0,0,0.45);
   z-index: 1;
+}
+.ts-carousel-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
 }
 .ts-carousel-content {
   position: relative;

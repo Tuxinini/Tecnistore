@@ -70,6 +70,56 @@
     return 'hogar';
   }
 
+  /* ──────────────────────────────────────────
+     RESOLUCIÓN DE DESCRIPCIÓN DEL PRODUCTO
+     Orden de prioridad:
+     1. short_description (campo "Descripción corta" en WooCommerce)
+     2. description (campo "Descripción" principal)
+     3. meta_data: campos SEO comunes (Yoast, RankMath, SEOPress, All-in-One SEO)
+     ────────────────────────────────────────── */
+  var SEO_META_KEYS = [
+    '_yoast_wpseo_metadesc',      /* Yoast SEO */
+    'rank_math_description',       /* RankMath */
+    '_aioseop_description',        /* All in One SEO */
+    '_seopress_titles_desc',       /* SEOPress */
+    'seo_description',             /* genérico */
+    '_product_description'         /* custom field común */
+  ];
+
+  function resolveDesc(p) {
+    /* 1. Descripción corta de WooCommerce */
+    if (p.short_description && p.short_description.trim()) {
+      return sanitizeDesc(p.short_description);
+    }
+    /* 2. Descripción principal de WooCommerce */
+    if (p.description && p.description.trim()) {
+      return sanitizeDesc(p.description);
+    }
+    /* 3. meta_data (plugins SEO / campos personalizados) */
+    var meta = p.meta_data || [];
+    for (var i = 0; i < meta.length; i++) {
+      if (SEO_META_KEYS.indexOf(meta[i].key) !== -1 && meta[i].value) {
+        return sanitizeDesc(String(meta[i].value));
+      }
+    }
+    return '';
+  }
+
+  var SAFE_TAGS = /^(p|ul|ol|li|strong|em|b|i|br|h2|h3|h4|span|div|a)$/i;
+  var UNSAFE_TAGS = /<(script|style|iframe|form|input|button|object|embed|link|meta|base)[^>]*>[\s\S]*?<\/\1>|<(script|style|iframe|form|input|button|object|embed|link|meta|base)[^>]*\/?>/gi;
+
+  function sanitizeDesc(html) {
+    if (!html) return '';
+    var clean = html
+      .replace(UNSAFE_TAGS, '')
+      .replace(/<[^>]+>/g, function (tag) {
+        var m = tag.match(/^<\/?([a-z][a-z0-9]*)/i);
+        if (!m) return '';
+        return SAFE_TAGS.test(m[1]) ? tag : '';
+      });
+    return clean.trim();
+  }
+
   function mapProduct(p) {
     if (!isInStock(p)) return null;
     if (p.status !== 'publish') return null;
@@ -84,7 +134,7 @@
     }
 
     var images = (p.images || []).map(function (img) { return img.src || ''; }).filter(Boolean);
-    var shortDesc = (p.short_description || '').replace(/<[^>]+>/g, '').trim();
+    var shortDesc = resolveDesc(p);
     var logitech  = isLogitechProduct(p);
 
     return {
@@ -159,9 +209,16 @@
     try {
       var cached = JSON.parse(localStorage.getItem(CACHE_KEY));
       if (cached && cached.ts && (Date.now() - cached.ts) < ttl && cached.products && cached.products.length) {
-        console.log('[WooSync] Caché válida — ' + cached.products.length + ' productos');
-        if (onReady) onReady(cached.products, { fromCache: true, syncedAt: cached.ts, total: cached.products.length });
-        return;
+        /* Si ningún producto tiene descripción, invalidar la caché para pedir datos frescos */
+        var hasDesc = cached.products.some(function(p) { return p.shortDesc && p.shortDesc.trim(); });
+        if (!hasDesc) {
+          console.log('[WooSync] Caché sin descripciones — forzando actualización');
+          localStorage.removeItem(CACHE_KEY);
+        } else {
+          console.log('[WooSync] Caché válida — ' + cached.products.length + ' productos');
+          if (onReady) onReady(cached.products, { fromCache: true, syncedAt: cached.ts, total: cached.products.length });
+          return;
+        }
       }
     } catch (e) {}
 

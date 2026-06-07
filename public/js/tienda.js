@@ -145,50 +145,36 @@ function doStoreSearch() {
     : '<div class="tnd-empty"><p>Sin resultados para "' + q + '".</p></div>';
 }
 
-/* ── Modal ── */
+/* ── Modal (Quick View) ── */
 function openModal(idx) {
   var p = tiendaItems[idx]; if (!p) return;
   _openProduct = p;
   var brand = extractBrand(p.name);
-  document.getElementById('ts-modal-brand').textContent = brand || p.category || '';
-  document.getElementById('ts-modal-name').textContent  = p.name;
-  document.getElementById('ts-modal-disc').textContent  = p.discount || '';
-  document.getElementById('ts-modal-price').textContent = fmt(p.price);
-  document.getElementById('ts-modal-old').textContent   = (p.oldPrice && p.oldPrice !== p.price) ? fmt(p.oldPrice) : '';
-  var mi = document.getElementById('ts-modal-main-img'); mi.src = p.images[0] || ''; mi.alt = p.name;
-  document.getElementById('ts-modal-thumbs').innerHTML = (p.images || []).map(function(src, i){
-    return '<img class="ts-thumb ts-modal-thumb ' + (i===0?'active':'') + '" src="'+src+'" alt="Vista '+(i+1)+'" onclick="setThumb('+i+','+idx+')" tabindex="0">';
-  }).join('');
-  /* Descripción corta desde WooCommerce si existe */
-  var specsEl = document.getElementById('ts-modal-specs');
-  if (specsEl) {
-    specsEl.innerHTML = p.shortDesc
-      ? '<div style="padding:10px 0;font-size:13.5px;color:var(--color-text-muted);line-height:1.65">' + p.shortDesc + '</div>'
-      : '<div style="padding:10px 0;font-size:13.5px;color:var(--color-text-muted)">Consulta por WhatsApp para especificaciones completas y disponibilidad.</div>';
-  }
+  /* Carrito */
+  window.qvCartAction = function() {
+    if (typeof addToCart === 'function') {
+      addToCart({ name: p.name, price: p.price, image: p.images && p.images[0] ? p.images[0] : '', category: p.category || '' });
+    }
+    if (typeof tsAddToCart === 'function') tsAddToCart();
+  };
+  /* WhatsApp */
   var msg = encodeURIComponent('Hola! Me interesa: ' + p.name + ' (' + fmt(p.price) + ').');
-  var wb = document.getElementById('ts-btn-wsp');
-  if (wb) wb.onclick = function(){ window.open('https://wa.me/573225817129?text='+msg,'_blank'); };
-  var ov = document.getElementById('ts-modal-overlay'); ov.classList.add('open'); document.body.style.overflow='hidden';
-  setTimeout(function(){ var c=document.querySelector('.ts-modal-close');if(c)c.focus(); },60);
-}
-function setThumb(imgIdx, prodIdx) {
-  var p = tiendaItems[prodIdx]; if (!p) return;
-  document.getElementById('ts-modal-main-img').src = p.images[imgIdx] || '';
-  document.querySelectorAll('.ts-thumb').forEach(function(t,i){ t.classList.toggle('active',i===imgIdx); });
-}
-function tsCloseModal(e) {
-  if (!e || e.target.id==='ts-modal-overlay') {
-    var ov = document.getElementById('ts-modal-overlay');
-    if (ov){ ov.classList.remove('open'); document.body.style.overflow=''; }
+  window.qvWspAction = function() { window.open('https://wa.me/573225817129?text=' + msg, '_blank'); };
+  /* Abrir */
+  if (typeof window.qvOpenProduct === 'function') {
+    window.qvOpenProduct({
+      brand:    brand || p.category || '',
+      name:     p.name,
+      price:    fmt(p.price),
+      oldPrice: (p.oldPrice && p.oldPrice !== p.price) ? fmt(p.oldPrice) : '',
+      discount: p.discount || '',
+      desc:     p.shortDesc || 'Consulta por WhatsApp para especificaciones completas y disponibilidad.',
+      tags:     [],
+      images:   p.images || [],
+      specs:    []
+    });
   }
 }
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    var ov=document.getElementById('ts-modal-overlay');
-    if(ov&&ov.classList.contains('open')){ ov.classList.remove('open');document.body.style.overflow=''; }
-  }
-});
 
 /* ── Agregar al carrito ── */
 function tsAddToCart() {
